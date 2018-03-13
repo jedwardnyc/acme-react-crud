@@ -1,0 +1,18 @@
+#productItem:hover{
+  background: #4285F4;
+  cursor: pointer;
+  color: #ffffff;
+  transition: 200ms;
+}
+
+#productItem:active{
+  background: #2C57A0;
+}
+
+.btn.sharp {
+  border-radius:0;
+}
+
+.button:hover{
+  cursor: pointer;
+}

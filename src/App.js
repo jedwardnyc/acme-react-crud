@@ -1,0 +1,120 @@
+import React, {Component} from 'react';
+import Products from './Products';
+import Product from './Product';
+import axios from 'axios';
+import {HashRouter as Router, Route} from 'react-router-dom';
+// import {HashRouter as Router, Route} from 'react-router-dom';
+
+
+export default class App extends Component{
+  constructor(){
+    super();
+    this.state = {
+      products: [],
+      numInventory: 0,
+      gross: 0,
+      name: '',
+      price: '',
+      inventory: '',
+    };
+    this.productCreate = this.productCreate.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onChangeName = this.onChangeName.bind(this);
+    this.onChangePrice = this.onChangePrice.bind(this);
+    this.onChangeInventory = this.onChangeInventory.bind(this);
+    this.onDelete = this.onDelete.bind(this)
+    this.onUpdate = this.onUpdate.bind(this)
+  };
+
+  componentDidMount(){
+    axios.get('/api/products')
+      .then( res => res.data)
+      .then( products => {
+        this.setState({ products })
+        this.totalInventory()
+        this.totalGross()
+      })
+  }
+
+  onSubmit(ev){
+    ev.preventDefault()
+    this.productCreate({name: this.state.name, inventory: this.state.inventory, price: this.state.price})
+    this.setState({name: '', price: '', inventory: ''})
+  }
+
+  onUpdate(product){
+    axios.put(`/api/products/${product.id}`)
+      .then( res => res.data)
+      .then( ()  => {
+        const products = this.state.products.filter(_product => _product.id === id*1 ? false : true);
+        this.setState({ products });
+        document.location.hash = '/';
+      })
+  }
+
+  onDelete(id){
+    axios.delete(`/api/products/${id}`)
+      .then( res => res.data)
+      .then( ()  => {
+        const products = this.state.products.filter(_product => _product.id === id*1 ? false : true);
+        this.setState({ products });
+        document.location.hash = '/';
+      })
+  }
+
+  onChangeName(ev){
+    ev.preventDefault()
+    this.setState({name: ev.target.value})
+  }
+
+  onChangePrice(ev){
+    ev.preventDefault()
+    this.setState({price: ev.target.value})
+  }
+
+  onChangeInventory(ev){
+    ev.preventDefault()
+    this.setState({inventory: ev.target.value})
+  }
+
+  productCreate(product){
+    axios.post('/api/products', product)
+      .then(res => res.data)
+      .then( product => this.setState({ products: [...this.state.products, product] }))
+      .then( ()=> document.location.hash = '/')
+  }
+
+  totalInventory(){
+    let numInventory = 0;
+    this.state.products.map( product =>{
+      numInventory += (product.inventory *1)
+    })
+    this.setState({ numInventory })
+  }
+
+  totalGross(){
+    let gross = 0;
+    this.state.products.map( product =>{
+      gross += ((product.inventory*1) * (product.price * 1))
+    })
+    this.setState({ gross })
+  }
+
+  render(){
+    const { products, numInventory, gross, name, price, inventory } = this.state;
+    const { onSubmit, onChangeName, onChangeInventory, onChangePrice, onDelete, onUpdate } = this;
+
+    return (
+      <div>
+        <Router>
+          <div>
+            <Route path='/' exact render = {() => <Products products={products} numInventory={numInventory} gross={gross} name={name} price={price} inventory={inventory} onDelete={onDelete} createProduct={onSubmit} onChangeName={onChangeName} onChangePrice={onChangePrice} onChangeInventory={onChangeInventory} /> } /> 
+            <Route path='/products/:id' exact render = {( { match } )=> (
+              <Product products={products} id={match.params.id} onUpdate={onUpdate} onChangeName={onChangeName} onChangePrice={onChangePrice} onChangeInventory={onChangeInventory}/> 
+            )} />
+          </div>
+        </Router>
+      </div>
+    )
+  };
+};
