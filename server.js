@@ -19,9 +19,14 @@ app.get('/api/products', (req,res,next)=>{
 })
 
 app.post('/api/products', (req,res,next)=>{
-  console.log(req.body)
   Product.create(req.body)
     .then( products => res.send(products))
+})
+
+app.put('/api/products/:id', (req,res,next)=>{
+  Product.findById(req.params.id)
+    .then(product => product.update(req.body))
+    .then(product => res.send(product))
 })
 
 app.delete(`/api/products/:id`, (req,res,next)=>{

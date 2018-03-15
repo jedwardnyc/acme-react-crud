@@ -3,7 +3,6 @@ import Products from './Products';
 import Product from './Product';
 import axios from 'axios';
 import {HashRouter as Router, Route} from 'react-router-dom';
-// import {HashRouter as Router, Route} from 'react-router-dom';
 
 
 export default class App extends Component{
@@ -23,7 +22,7 @@ export default class App extends Component{
     this.onChangePrice = this.onChangePrice.bind(this);
     this.onChangeInventory = this.onChangeInventory.bind(this);
     this.onDelete = this.onDelete.bind(this)
-    this.onUpdate = this.onUpdate.bind(this)
+    this.updateProduct = this.updateProduct.bind(this)
   };
 
   componentDidMount(){
@@ -42,17 +41,23 @@ export default class App extends Component{
     this.setState({name: '', price: '', inventory: ''})
   }
 
-  onUpdate(product){
-    axios.put(`/api/products/${product.id}`)
-      .then( res => res.data)
-      .then( ()  => {
-        const products = this.state.products.filter(_product => _product.id === id*1 ? false : true);
-        this.setState({ products });
+  updateProduct(product){
+    axios.put(`/api/products/${product.id}`, product)
+      .then( res => res.data )
+      .then( product => {
+        const products = this.state.products.map( _product => {
+          if (_product.id === product.id*1){
+            return product
+          }
+          return _product;
+        });
+        this.setState({ products })
         document.location.hash = '/';
       })
   }
 
   onDelete(id){
+    console.log(id)
     axios.delete(`/api/products/${id}`)
       .then( res => res.data)
       .then( ()  => {
@@ -63,17 +68,14 @@ export default class App extends Component{
   }
 
   onChangeName(ev){
-    ev.preventDefault()
     this.setState({name: ev.target.value})
   }
 
   onChangePrice(ev){
-    ev.preventDefault()
     this.setState({price: ev.target.value})
   }
 
   onChangeInventory(ev){
-    ev.preventDefault()
     this.setState({inventory: ev.target.value})
   }
 
@@ -102,7 +104,7 @@ export default class App extends Component{
 
   render(){
     const { products, numInventory, gross, name, price, inventory } = this.state;
-    const { onSubmit, onChangeName, onChangeInventory, onChangePrice, onDelete, onUpdate } = this;
+    const { onSubmit, onChangeName, onChangeInventory, onChangePrice, onDelete, updateProduct } = this;
 
     return (
       <div>
@@ -110,7 +112,7 @@ export default class App extends Component{
           <div>
             <Route path='/' exact render = {() => <Products products={products} numInventory={numInventory} gross={gross} name={name} price={price} inventory={inventory} onDelete={onDelete} createProduct={onSubmit} onChangeName={onChangeName} onChangePrice={onChangePrice} onChangeInventory={onChangeInventory} /> } /> 
             <Route path='/products/:id' exact render = {( { match } )=> (
-              <Product products={products} id={match.params.id} onUpdate={onUpdate} onChangeName={onChangeName} onChangePrice={onChangePrice} onChangeInventory={onChangeInventory}/> 
+              <Product products={products} id={match.params.id} update={updateProduct} onChangeName={onChangeName} onChangePrice={onChangePrice} onChangeInventory={onChangeInventory}/> 
             )} />
           </div>
         </Router>
