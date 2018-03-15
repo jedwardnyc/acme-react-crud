@@ -32,7 +32,7 @@ const Product = (props) => {
                   Price per Unit: ${product.price} <br /> 
                   Total in Stock: {product.inventory} 
                 </div>
-                <button onClick={()=> onDelete(product.id)} style={{flex: 1}} className="btn btn-danger">DELETE</button>
+                <button onClick={(ev)=> onDelete(product.id,ev)} style={{flex: 1}} className="btn btn-danger">DELETE</button>
               </form>
             </Link>
             </li>

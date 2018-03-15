@@ -53,17 +53,22 @@ export default class App extends Component{
         });
         this.setState({ products })
         document.location.hash = '/';
+        this.totalInventory();
+        this.totalGross();
       })
   }
 
-  onDelete(id){
+  onDelete(id, ev){
+    ev.preventDefault()
     axios.delete(`/api/products/${id}`)
       .then( res => res.data)
       .then( ()  => {
         const products = this.state.products.filter(_product => _product.id === id*1 ? false : true);
         this.setState({ products });
-        document.location.hash = '/';
+        this.totalInventory();
+        this.totalGross();
       })
+    
   }
 
   onChangeName(ev){
@@ -82,7 +87,11 @@ export default class App extends Component{
     axios.post('/api/products', product)
       .then(res => res.data)
       .then( product => this.setState({ products: [...this.state.products, product] }))
-      .then( ()=> document.location.hash = '/')
+      .then( ()=> {
+        this.totalInventory();
+        this.totalGross();
+        document.location.hash = '/'
+      })
   }
 
   totalInventory(){
