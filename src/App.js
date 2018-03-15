@@ -57,7 +57,6 @@ export default class App extends Component{
   }
 
   onDelete(id){
-    console.log(id)
     axios.delete(`/api/products/${id}`)
       .then( res => res.data)
       .then( ()  => {

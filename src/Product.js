@@ -47,7 +47,6 @@ export default class Product extends React.Component {
 
   onUpdate(ev){
     ev.preventDefault()
-    console.log(this.state)
     const { name, price, inventory, id} = this.state
     const product = { id, name, price, inventory }
     this.props.update(product)
@@ -64,7 +63,7 @@ export default class Product extends React.Component {
       <div>
         <form onSubmit={onUpdate} className='form-control'>
           <div className='form-group'>
-            <label> Name: {id} </label>
+            <label> Name: </label>
             <br />
             <input type='text' name='name' onChange={onChangeName} value={name} placeholder="Product Name" />
           </div>
